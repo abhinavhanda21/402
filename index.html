@@ -443,14 +443,14 @@ list-style-type: none;
 <div id="description-of-the-data" class="slide section level2">
 <h1>Description of the data</h1>
 <p>This data set is based on one-year vehicle insurance policies taken out in 2006 in Canada. The following variables are available to you in the file insurance.csv on the Blackboard. These are the variables in your data set. veh value: vehicle value in 10,000, clm: occurrence of claim (0=no, 1=yes), vehage : age of the vehicle (1 (youngest), 2, 3, 4)), gender: gender of driver (M or F), area: driver’s area of residence (A, B, C, D, E, F), age cat: driver’s age category (1 (youngest), 2, 3, 4))</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">ins &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;C:/Users/abhin/Downloads/insurance_sub.csv&quot;</span>,<span class="dt">header=</span>T)</a>
-<a class="sourceLine" id="cb1-2" title="2">ins<span class="op">$</span>resp &lt;-<span class="st"> </span><span class="kw">cbind</span>(ins<span class="op">$</span>clm)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">ins &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;C:/Users/abhin/Downloads/insurance_sub.csv&quot;</span>,<span class="dt">header=</span>T)</a></code></pre></div>
 </div>
 <div id="using-the-logit-model" class="slide section level2">
 <h1>Using the logit model</h1>
-<p>The code below estimates a logistic regression model using the glm (generalized linear model) function. First, we convert claim to a factor to indicate that rank should be treated as a categorical variable.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">model1&lt;-<span class="kw">glm</span>(resp<span class="op">~</span>veh_value<span class="op">+</span>veh_age<span class="op">+</span>exposure<span class="op">+</span>veh_body<span class="op">+</span>gender<span class="op">+</span>area<span class="op">+</span>agecat, </a>
-<a class="sourceLine" id="cb2-2" title="2">              <span class="dt">family=</span><span class="kw">binomial</span>(<span class="dt">link=</span>logit),<span class="dt">data=</span>ins)</a></code></pre></div>
+<p>The code below estimates a logistic regression model using the glm (generalized linear model) function. First, we convert claim to a factor to indicate that claim should be treated as a categorical variable.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">ins<span class="op">$</span>resp &lt;-<span class="st"> </span><span class="kw">cbind</span>(ins<span class="op">$</span>clm)</a>
+<a class="sourceLine" id="cb2-2" title="2">model1&lt;-<span class="kw">glm</span>(resp<span class="op">~</span>veh_value<span class="op">+</span>veh_age<span class="op">+</span>exposure<span class="op">+</span>veh_body<span class="op">+</span>gender<span class="op">+</span>area<span class="op">+</span>agecat, </a>
+<a class="sourceLine" id="cb2-3" title="3">              <span class="dt">family=</span><span class="kw">binomial</span>(<span class="dt">link=</span>logit),<span class="dt">data=</span>ins)</a></code></pre></div>
 </div>
 <div id="slide-with-r-output" class="slide section level2">
 <h1>Slide with R Output</h1>
@@ -549,6 +549,168 @@ list-style-type: none;
 ## areaE         0.99042787 0.61798856 1.54549367
 ## areaF         0.90881239 0.50162021 1.56390885
 ## agecat        0.84975475 0.78160864 0.92319102</code></pre>
+</div>
+<div id="conclusion" class="slide section level2">
+<h1>Conclusion</h1>
+<blockquote>
+<p>Looking closely at summary(model1) we can conclude that following are significant</p>
+</blockquote>
+<p>Exposure with Pr(&gt;|z|) = &lt;2e-16 veh_bodyUTE with Pr(&gt;|z|) = 0.010668 agecat with Pr(&gt;|z|) = 0.000125</p>
+</div>
+<div id="redefining-vehicle-value-as-a-categorical-covariate" class="slide section level2">
+<h1>Redefining vehicle value as a categorical covariate</h1>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">ins<span class="op">$</span>veh_value1 &lt;-<span class="st"> </span><span class="kw">cut</span>(ins<span class="op">$</span>veh_value, <span class="kw">c</span>(<span class="dv">0</span>,<span class="fl">2.5</span>, <span class="fl">5.0</span>, <span class="fl">7.5</span>,<span class="dv">10</span>,<span class="fl">12.5</span>))</a></code></pre></div>
+</div>
+<div id="model-with-new-covariate" class="slide section level2">
+<h1>Model with new covariate</h1>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">model2 &lt;-<span class="st"> </span><span class="kw">glm</span>(resp <span class="op">~</span><span class="st"> </span>veh_value1 <span class="op">+</span><span class="st"> </span>veh_age <span class="op">+</span><span class="st"> </span>exposure<span class="op">+</span>veh_body<span class="op">+</span>gender<span class="op">+</span>area, <span class="dt">family=</span><span class="kw">binomial</span>(<span class="dt">link=</span>logit),<span class="dt">data=</span>ins)</a>
+<a class="sourceLine" id="cb14-2" title="2"></a>
+<a class="sourceLine" id="cb14-3" title="3"><span class="kw">summary</span>(model2) </a></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = resp ~ veh_value1 + veh_age + exposure + veh_body + 
+##     gender + area, family = binomial(link = logit), data = ins)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -0.7124  -0.4125  -0.3246  -0.2613   2.9277  
+## 
+## Coefficients:
+##                       Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)           -3.74081    0.25474 -14.685   &lt;2e-16 ***
+## veh_value1(2.5,5]      0.37732    0.20013   1.885   0.0594 .  
+## veh_value1(5,7.5]     -0.29996    0.54150  -0.554   0.5796    
+## veh_value1(7.5,10]   -12.79595  380.86389  -0.034   0.9732    
+## veh_value1(10,12.5]  -12.50589 1455.39754  -0.009   0.9931    
+## veh_age                0.05968    0.06636   0.899   0.3685    
+## exposure               1.75923    0.21049   8.358   &lt;2e-16 ***
+## veh_bodyHDTOP         -0.02603    0.39592  -0.066   0.9476    
+## veh_bodySEDAN         -0.07932    0.15303  -0.518   0.6042    
+## veh_bodySTNWG         -0.08812    0.19510  -0.452   0.6515    
+## veh_bodyTRUCK          0.13659    0.34685   0.394   0.6937    
+## veh_bodyUTE           -0.89013    0.35812  -2.486   0.0129 *  
+## genderM                0.12282    0.12405   0.990   0.3221    
+## areaB                 -0.07722    0.18129  -0.426   0.6701    
+## areaC                 -0.01022    0.15823  -0.065   0.9485    
+## areaD                 -0.18224    0.21325  -0.855   0.3928    
+## areaE                 -0.05308    0.23279  -0.228   0.8196    
+## areaF                 -0.07489    0.28883  -0.259   0.7954    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 2311.3  on 4817  degrees of freedom
+## Residual deviance: 2218.2  on 4800  degrees of freedom
+##   (3 observations deleted due to missingness)
+## AIC: 2254.2
+## 
+## Number of Fisher Scoring iterations: 14</code></pre>
+</div>
+<div id="conclusion-1" class="slide section level2">
+<h1>Conclusion</h1>
+<blockquote>
+<p>Looking closely at summary(model2) we can conclude that following are significant</p>
+</blockquote>
+<p>Exposure with Pr(&gt;|z|) = &lt;2e-16 veh_bodyUTE with Pr(&gt;|z|) = 0.010668 agecat with Pr(&gt;|z|) = 0.000125 veh_value1(2.5,5] with Pr(&gt;|z|) = 0.05553 .</p>
+</div>
+<div id="odds-ratios-model2-and-95-ci" class="slide section level2">
+<h1>odds ratios Model2 and 95% CI</h1>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1"><span class="kw">exp</span>(<span class="kw">coef</span>(model2))</a></code></pre></div>
+<pre><code>##         (Intercept)   veh_value1(2.5,5]   veh_value1(5,7.5]  veh_value1(7.5,10] 
+##        2.373478e-02        1.458378e+00        7.408487e-01        2.771981e-06 
+## veh_value1(10,12.5]             veh_age            exposure       veh_bodyHDTOP 
+##        3.704786e-06        1.061492e+00        5.807985e+00        9.743091e-01 
+##       veh_bodySEDAN       veh_bodySTNWG       veh_bodyTRUCK         veh_bodyUTE 
+##        9.237463e-01        9.156502e-01        1.146364e+00        4.106017e-01 
+##             genderM               areaB               areaC               areaD 
+##        1.130686e+00        9.256832e-01        9.898338e-01        8.334026e-01 
+##               areaE               areaF 
+##        9.483002e-01        9.278493e-01</code></pre>
+</div>
+<div id="comparision-between-odds-ratio" class="slide section level2">
+<h1>Comparision between odds ratio</h1>
+<table>
+<thead>
+<tr class="header">
+<th>Covariates</th>
+<th>Model1</th>
+<th>Model2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>veh_value</td>
+<td>1.05738485</td>
+<td>1.458378e</td>
+</tr>
+<tr class="even">
+<td>veh_age</td>
+<td>1.06056980</td>
+<td>1.061492e+00</td>
+</tr>
+<tr class="odd">
+<td>exposure</td>
+<td>5.93352705</td>
+<td>5.807985e+00</td>
+</tr>
+<tr class="even">
+<td>veh_bodyHDTOP</td>
+<td>0.93988379</td>
+<td>9.743091e-01</td>
+</tr>
+<tr class="odd">
+<td>veh_bodySEDAN</td>
+<td>0.95746293</td>
+<td>9.237463e-01</td>
+</tr>
+<tr class="even">
+<td>veh_bodySTNWG</td>
+<td>0.97362653</td>
+<td>9.156502e-01</td>
+</tr>
+<tr class="odd">
+<td>veh_bodyTRUCK</td>
+<td>1.14268737</td>
+<td>1.458378e</td>
+</tr>
+<tr class="even">
+<td>veh_bodyUTE</td>
+<td>0.39979925</td>
+<td>4.106017e-01</td>
+</tr>
+<tr class="odd">
+<td>genderM</td>
+<td>1.16826540</td>
+<td>1.146364e+00</td>
+</tr>
+<tr class="even">
+<td>areaB</td>
+<td>0.93162986</td>
+<td>9.256832e-01</td>
+</tr>
+<tr class="odd">
+<td>areaC</td>
+<td>0.99668836</td>
+<td>9.898338e-01</td>
+</tr>
+<tr class="even">
+<td>areaD</td>
+<td>0.85150583</td>
+<td>8.334026e-01</td>
+</tr>
+<tr class="odd">
+<td>areaE</td>
+<td>0.99042787</td>
+<td>9.483002e-01</td>
+</tr>
+<tr class="even">
+<td>areaF</td>
+<td>0.90881239</td>
+<td>9.278493e-01</td>
+</tr>
+</tbody>
+</table>
 </div>
 
   <!-- dynamically load mathjax for compatibility with self-contained -->
